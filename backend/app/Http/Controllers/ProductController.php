@@ -18,7 +18,15 @@ class ProductController extends Controller
      */
     public function index()
     {
+        $appUrl = env('CAMINHO_STORAGE');
+    
         $products = Product::all();
+    
+        $products->transform(function ($product) use ($appUrl) {
+            $product->image_url = $product->path_image ? $appUrl . Storage::url($product->path_image) : null;
+            return $product;
+        });
+    
         return response()->json($products);
     }
 
@@ -50,7 +58,7 @@ class ProductController extends Controller
 
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('public/images'); 
-            $imagePath = str_replace('public/', 'storage/', $imagePath);
+            $imagePath = str_replace('public/', '', $imagePath);
             $data['path_image'] = $imagePath;
         }
     
@@ -61,9 +69,46 @@ class ProductController extends Controller
 
     public function highlights()
     {
-        $highlights = Product::latest()->take(12)->get();
+        // Obter o APP_URL do arquivo .env
+        $appUrl = env('CAMINHO_STORAGE');
+    
+        // Busca os últimos 12 produtos cadastrados
+        $products = Product::latest()->take(12)->get();
+    
+        // Transforma os produtos para incluir URLs das imagens
+        $products->transform(function ($product) use ($appUrl) {
+            $product->image_url = $product->path_image ? $appUrl . Storage::url($product->path_image) : null;
+            return $product;
+        });
+    
+        return response()->json($products);
+    }
 
-        return response()->json($highlights);
+    public function updateQuantity(Request $request)
+    {
+        if (!Auth::check() || !Auth::user()->admin) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer|exists:products,id',
+            'quantity' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $product = Product::find($request->input('id'));
+
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        $product->quantity = $request->input('quantity');
+        $product->save();
+
+        return response()->json($product);
     }
 
     /**
@@ -74,7 +119,12 @@ class ProductController extends Controller
      */
     public function show($id)
     {
+        $appUrl = env('CAMINHO_STORAGE');
+    
         $product = Product::findOrFail($id);
+    
+        $product->image_url = $product->path_image ? $appUrl . Storage::url($product->path_image) : null;
+    
         return response()->json($product);
     }
 

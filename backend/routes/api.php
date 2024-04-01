@@ -36,6 +36,9 @@ Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']
 
 //Products
 // Route::apiResource('/products', ProductController::class);
-Route::get('/products', [ProductController::class, 'store']);
+Route::post('/products', [ProductController::class, 'store']);
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products/highlights', [ProductController::class, 'highlights']);
+Route::put('/products/update-quantity', [ProductController::class, 'updateQuantity']);
 
