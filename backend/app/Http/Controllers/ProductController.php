@@ -59,6 +59,13 @@ class ProductController extends Controller
         return response()->json($product, 201);
     }
 
+    public function highlights()
+    {
+        $highlights = Product::latest()->take(12)->get();
+
+        return response()->json($highlights);
+    }
+
     /**
      * Display the specified product.
      *

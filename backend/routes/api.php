@@ -35,4 +35,7 @@ Route::middleware('auth:api')->get('/refresh', [AuthController::class, 'refresh'
 Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']);
 
 //Products
-Route::apiResource('/products', ProductController::class);
+// Route::apiResource('/products', ProductController::class);
+Route::get('/products', [ProductController::class, 'store']);
+Route::get('/products/highlights', [ProductController::class, 'highlights']);
+
