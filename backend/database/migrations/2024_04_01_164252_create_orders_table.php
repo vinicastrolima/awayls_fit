@@ -16,11 +16,12 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->decimal('total', 10, 2);
-            $table->json('items'); 
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->decimal('total_amount', 10, 2);
+            $table->text('items');
+            $table->string('delivery_address');
+            $table->string('payment_method');
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -33,18 +33,24 @@ Route::post('/users', [UserController::class, 'store']);
 
 //Auth
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:api')->get('/refresh', [AuthController::class, 'refresh']);
-Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']);
+// Route::middleware('auth:api')->get('/refresh', [AuthController::class, 'refresh']);
+// Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']);
 
 //Products
-// Route::apiResource('/products', ProductController::class);
-Route::post('/products', [ProductController::class, 'store']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products/highlights', [ProductController::class, 'highlights']);
+
+##Admin
 Route::put('/products/update-quantity', [ProductController::class, 'updateQuantity']);
+Route::post('/products', [ProductController::class, 'store']);
+
 
 
 Route::middleware('auth:api')->group(function () {
     Route::put('/cart/update', [CartController::class, 'update']);
+    Route::post('/cart/checkout', [CartController::class, 'checkout']);
+
+    Route::get('/orders', [CartController::class, 'listOrders']);
+    Route::get('/orders/{id}', [CartController::class, 'getOrderDetails']);
 });

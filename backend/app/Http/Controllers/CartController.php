@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use App\Models\Cart;
 use Illuminate\Support\Facades\Validator;
-use App\Models\User;
+use App\Models\Order;
 
 
 class CartController extends Controller
@@ -46,6 +46,74 @@ class CartController extends Controller
         $cart->save();
     
         return response()->json(['message' => 'Cart updated successfully'], 200);
+    }
+
+    public function checkout(Request $request)
+    {
+        $user = Auth::user();
+        $cart = $user->cart;
+
+        if (!$cart) {
+            return response()->json(['error' => 'Cart not found'], 404);
+        }
+
+        // Validação dos dados de entrada
+        $validator = Validator::make($request->all(), [
+            'delivery_address' => 'required|string|max:255',
+            'payment_method' => 'required|string|in:credit_card,cash',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Calcula o total da compra
+        $totalAmount = 0;
+        foreach ($cart->items as $item) {
+            $product = Product::findOrFail($item['product_id']);
+            $totalAmount += $product->price * $item['quantity'];
+
+            // Subtrai a quantidade do produto do estoque
+            $product->decrement('quantity', $item['quantity']);
+        }
+
+        // Cria o pedido
+        $order = new Order([
+            'user_id' => $user->id,
+            'total_amount' => $totalAmount,
+            'items' => $cart->items,
+            'delivery_address' => $request->input('delivery_address'),
+            'payment_method' => $request->input('payment_method'),
+        ]);
+        $order->save();
+
+        // Limpa o carrinho do usuário
+        $cart->delete();
+
+        return response()->json($order, 201);
+    }
+
+    public function listOrders()
+    {
+        $orders = Order::all(['id', 'total_amount', 'payment_method']);
+        return response()->json($orders);
+    }
+
+    public function getOrderDetails($id)
+    {
+        $order = Order::findOrFail($id);
+        $items = collect($order->items); 
+    
+        $items = $items->map(function ($item) {
+            $product = Product::findOrFail($item['product_id']);
+            $item['name'] = $product->name;
+            unset($item['product_id']);
+            return $item;
+        });
+    
+        $order->items = $items;
+    
+        return response()->json($order);
     }
     
 }
