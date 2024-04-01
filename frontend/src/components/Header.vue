@@ -22,7 +22,7 @@
               <router-link to="/cart" class="nav-link">Carrinho</router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/login">Login</router-link>
+              <router-link to="/loginPage">Login</router-link>
             </li>
             <li class="nav-item">
               <router-link to="/register" class="nav-link">Registrar</router-link>
