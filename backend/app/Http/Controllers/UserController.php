@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Cart;
 
 
 class UserController extends Controller
@@ -39,7 +40,14 @@ class UserController extends Controller
             $data['password'] = bcrypt($request->input('password'));
         }
     
+        // Cria o usuário
         $user = User::create($data);
+    
+        // Se o usuário não for um administrador, cria automaticamente um carrinho para ele
+        if (!$user->admin) {
+            // Cria um carrinho vazio associado ao usuário recém-criado
+            $user->cart()->create();
+        }
     
         return response()->json($user, 201);
     }
@@ -51,26 +59,4 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            // Adicione as validações para os outros campos conforme necessário
-        ]);
-
-        $user->update($validatedData);
-
-        return response()->json($user);
-    }
-
-    public function destroy($id)
-    {
-        $user = User::findOrFail($id);
-        $user->delete();
-
-        return response()->json(null, 204);
-    }
 }
