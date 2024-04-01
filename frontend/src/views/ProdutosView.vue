@@ -21,7 +21,7 @@
                     <!-- Botão "Veja Mais" -->
                     <router-link :to="{ name: 'Product', params: { id: produto.id } }" class="btn btn-secondary">Veja Mais</router-link>
                     <!-- Botão "Adicionar ao Carrinho" -->
-                    <button class="btn btn-primary">Add ao Carrinho</button>
+                    <button @click="adicionarAoCarrinho(produto.id)" class="btn btn-primary">Add ao Carrinho</button>
                   </div>
                 </div>
               </div>
@@ -48,15 +48,36 @@ export default {
     };
   },
   mounted() {
-    // Faz a requisição à API quando o componente é montado
     axios.get(`${process.env.VUE_APP_ROOT_API_URL}/products`)
       .then(response => {
-        // Atualiza a lista de produtos com os dados da resposta
         this.produtos = response.data;
       })
       .catch(error => {
         console.error('Erro ao obter produtos:', error);
       });
+  },
+  methods: {
+    adicionarAoCarrinho(productId) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        axios.put(`${process.env.VUE_APP_ROOT_API_URL}/cart/update`, {
+          items: [{
+            product_id: productId,
+            quantity: 1
+          }]
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+          .then(() => {
+            alert('Item adicionado ao carrinho');
+          })
+          .catch(error => {
+            console.error('Erro ao adicionar item ao carrinho:', error);
+          });
+      }
+    }
   }
 }
 </script>

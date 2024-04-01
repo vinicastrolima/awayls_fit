@@ -53,4 +53,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/orders', [CartController::class, 'listOrders']);
     Route::get('/orders/{id}', [CartController::class, 'getOrderDetails']);
+
+    Route::get('/cart/details', [CartController::class, 'getCartDetails']);
+
 });

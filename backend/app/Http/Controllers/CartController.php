@@ -12,6 +12,40 @@ use App\Models\Order;
 
 class CartController extends Controller
 {
+
+    public function getCartDetails()
+    {
+        $user = Auth::user();
+        $cart = $user->cart;
+
+        if (!$cart) {
+            return response()->json(['error' => 'Cart not found'], 404);
+        }
+
+        // Buscar os detalhes dos produtos no carrinho
+        $cartItems = $cart->items;
+        $cartDetails = [];
+
+        foreach ($cartItems as $item) {
+            $product = Product::find($item['product_id']);
+
+            if (!$product) {
+                // Se o produto não for encontrado, continue para o próximo
+                continue;
+            }
+
+            $cartDetails[] = [
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'name' => $product->name,
+                'name' => $product->price,
+                // Adicione aqui outros detalhes do produto que deseja incluir
+            ];
+        }
+
+        return response()->json(['cart' => $cartDetails]);
+    }
+
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [

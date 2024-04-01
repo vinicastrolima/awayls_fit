@@ -8,7 +8,6 @@
           <img :src="product.image_url" class="img-fluid" :alt="product.name">
         </div>
         <div class="col-md-6">
-          <!-- Adicione a classe de margem Bootstrap ao título do produto -->
           <h2 class="mb-3">{{ product.name }}</h2>
           <p class="mb-4">{{ product.description }}</p>
           <p>R$ {{ product.price }}</p>

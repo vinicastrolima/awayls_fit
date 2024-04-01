@@ -1,5 +1,6 @@
 <template>
     <div>
+      <HeaderMain />
       <h1 class="mt-4 mb-3">Detalhes do Pedido</h1>
       
       <!-- Informações do Pedido -->
@@ -25,6 +26,9 @@
   </template>
   
   <script>
+  import HeaderMain from '@/components/Header.vue';
+  import axios from 'axios';
+  
   export default {
     name: 'DetalhesPedido',
     props: {
@@ -32,6 +36,9 @@
         type: Number,
         required: true
       }
+    },
+    components: {
+      HeaderMain
     },
     data() {
       return {
@@ -45,8 +52,6 @@
       carregarDetalhesPedido() {
         const token = localStorage.getItem('token');
         if (token) {
-          // Aqui você faria a requisição HTTP para obter os detalhes do pedido com base no ID
-          // Substitua a URL pela rota correta do seu backend
           axios.get(`${process.env.VUE_APP_ROOT_API_URL}/orders/${this.id}`, {
             headers: {
               Authorization: `Bearer ${token}`
@@ -61,7 +66,6 @@
         }
       },
       formatarData(data) {
-        // Aqui você pode implementar uma lógica para formatar a data conforme necessário
         return new Date(data).toLocaleString();
       }
     }

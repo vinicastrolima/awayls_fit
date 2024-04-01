@@ -48,10 +48,8 @@ components: {
     };
   },
   mounted() {
-    // Faz a requisição à API quando o componente é montado
     axios.get(`${process.env.VUE_APP_ROOT_API_URL}/destaques`)
       .then(response => {
-        // Atualiza a lista de produtos com os dados da resposta
         this.produtos = response.data;
       })
       .catch(error => {
@@ -67,5 +65,4 @@ components: {
 </script>
 
 <style scoped>
-/* Estilos específicos para este componente, se necessário */
 </style>
