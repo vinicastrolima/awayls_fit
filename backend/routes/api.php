@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
+
 
 
 /*
@@ -21,5 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-//UserRoutes
+//User
 Route::post('/users', [UserController::class, 'store']);
+
+
+//Auth
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:api')->get('/refresh', [AuthController::class, 'refresh']);
+Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']);
