@@ -24,8 +24,8 @@ class CartController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
     
-        $user = $request->user(); // Obter o usuário autenticado
-        $cart = $user->cart()->firstOrNew(); // Obter o carrinho do usuário ou criar um novo
+        $user = $request->user(); 
+        $cart = $user->cart()->firstOrNew();
     
         foreach ($request->items as $item) {
             $product = Product::findOrFail($item['product_id']);

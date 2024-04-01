@@ -69,13 +69,10 @@ class ProductController extends Controller
 
     public function highlights()
     {
-        // Obter o APP_URL do arquivo .env
         $appUrl = env('CAMINHO_STORAGE');
     
-        // Busca os últimos 12 produtos cadastrados
         $products = Product::latest()->take(12)->get();
     
-        // Transforma os produtos para incluir URLs das imagens
         $products->transform(function ($product) use ($appUrl) {
             $product->image_url = $product->path_image ? $appUrl . Storage::url($product->path_image) : null;
             return $product;

@@ -40,12 +40,9 @@ class UserController extends Controller
             $data['password'] = bcrypt($request->input('password'));
         }
     
-        // Cria o usuário
         $user = User::create($data);
     
-        // Se o usuário não for um administrador, cria automaticamente um carrinho para ele
         if (!$user->admin) {
-            // Cria um carrinho vazio associado ao usuário recém-criado
             $user->cart()->create();
         }
     
