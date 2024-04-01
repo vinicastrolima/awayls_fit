@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class UserController extends Controller
 {
@@ -15,31 +17,29 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-
-        // $validatedData = $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'email' => 'required|email|unique:users',
-        //     'birthdate' => 'required|date',
-        //     'cpf' => 'required|string|unique:users',
-        //     'gender' => 'required|string|in:Male,Female,Other',
-        //     'address' => 'required|string|max:255',
-        //     'admin' => 'sometimes|boolean',
-        //     'password' => 'nullable|string|min:6',
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'birthdate' => 'required|date',
+            'cpf' => 'required|string|unique:users',
+            'gender' => 'required|string|in:Male,Female,Other',
+            'address' => 'required|string|max:255',
+            'admin' => 'sometimes|boolean',
+            'password' => 'nullable|string|min:6',
+        ]);
     
-        $validatedData = $request->all();
-
-        // Definindo um valor padrão para 'admin' se não estiver presente na requisição
-        $validatedData['admin'] = $request->input('admin', false);
-    
-        // Se a senha foi fornecida na requisição, ela será criptografada antes de ser armazenada no banco de dados
-        if ($request->has('password')) {
-            $validatedData['password'] = bcrypt($request->input('password'));
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
     
-        // dd('Chegou aqui 3');
-
-        $user = User::create($validatedData);
+        $data = $request->all();
+        $data['admin'] = $request->input('admin', false);
+    
+        if ($request->has('password')) {
+            $data['password'] = bcrypt($request->input('password'));
+        }
+    
+        $user = User::create($data);
     
         return response()->json($user, 201);
     }
