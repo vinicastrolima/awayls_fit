@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
+
 
 
 
@@ -42,3 +44,7 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products/highlights', [ProductController::class, 'highlights']);
 Route::put('/products/update-quantity', [ProductController::class, 'updateQuantity']);
 
+
+Route::middleware('auth:api')->group(function () {
+    Route::put('/cart/update', [CartController::class, 'update']);
+});
